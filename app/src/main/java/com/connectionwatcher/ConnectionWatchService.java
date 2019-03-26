@@ -55,13 +55,6 @@ public class ConnectionWatchService extends IntentService {
                 if (bluetoothAdapter != null) {
                     Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
                     if (pairedDevices.size() > 0) {
-                        /*
-                        final IntentFilter bluetoothFilter = new IntentFilter();
-                        bluetoothFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-                        bluetoothFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-                        registerReceiver(bluetoothReceiver, bluetoothFilter);
-                        */
-
                         for (BluetoothDevice device : pairedDevices) {
                             if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
                                 Log.d(TAG, device.getName());
