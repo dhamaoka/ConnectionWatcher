@@ -8,4 +8,5 @@
     <string name="SwitchOff">監視オフ</string>
     <string name="app_name">BT圏外監視</string>
     <string name="Connected">接続しました。</string>
+    <string name="Start_Watching">監視を開始しました。</string>
 </resources>

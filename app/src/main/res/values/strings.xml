@@ -7,4 +7,5 @@
     <string name="SwitchOn">Watching</string>
     <string name="SwitchOff">Watch Off</string>
     <string name="Connected">Connected</string>
+    <string name="Start_Watching">Start Watching</string>
 </resources>

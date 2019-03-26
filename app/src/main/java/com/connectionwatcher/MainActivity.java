@@ -36,7 +36,7 @@ public class MainActivity extends WearableActivity {
                         if (isChecked) {
                             displayChar = getResources().getString(R.string.SwitchOn);
                             Intent sv = new Intent(getBaseContext(), ConnectionWatchService.class);
-                            startService(sv);
+                            startForegroundService(sv);
                             switchButton.setText(getResources().getText(R.string.SwitchOn));
                         }
                         // オフなら

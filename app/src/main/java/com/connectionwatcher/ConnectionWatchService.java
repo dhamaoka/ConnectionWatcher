@@ -1,10 +1,10 @@
 package com.connectionwatcher;
 
+import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -21,16 +21,31 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class ConnectionWatchService extends Service {
+public class ConnectionWatchService extends IntentService {
     private final static String TAG = "ConnectionWatchService";
     private Timer timer = new Timer();
     int INTERVAL_PERIOD = 20000;
     final BluetoothReceiver bluetoothReceiver = new BluetoothReceiver();
 
+    public ConnectionWatchService() {
+        super(TAG);
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
+        String displayChar = getResources().getString(R.string.Start_Watching);
+        Toast toast = Toast.makeText(getApplicationContext(), displayChar, Toast.LENGTH_SHORT);
+        toast.show();
+        //通知のメッセージだわな。
+        String message = getResources().getString(R.string.SwitchOn);
+        showNotification(message);
+
         final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        final IntentFilter bluetoothFilter = new IntentFilter();
+        bluetoothFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        bluetoothFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        registerReceiver(bluetoothReceiver, bluetoothFilter);
 
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -40,16 +55,20 @@ public class ConnectionWatchService extends Service {
                 if (bluetoothAdapter != null) {
                     Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
                     if (pairedDevices.size() > 0) {
+                        /*
                         final IntentFilter bluetoothFilter = new IntentFilter();
                         bluetoothFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
                         bluetoothFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
                         registerReceiver(bluetoothReceiver, bluetoothFilter);
+                        */
 
                         for (BluetoothDevice device : pairedDevices) {
                             if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
                                 Log.d(TAG, device.getName());
                                 if (!bluetoothReceiver.IsBluetoothConnected) {
-                                    showNotification();
+                                    //通知のメッセージだわな。
+                                    String message = getResources().getString(R.string.ConnectionLost);
+                                    showNotification(message);
                                 }
                                 break;
                             }
@@ -63,6 +82,11 @@ public class ConnectionWatchService extends Service {
             }
         }, 0, INTERVAL_PERIOD);
         return START_STICKY;
+    }
+
+    @Override
+    protected void onHandleIntent(Intent intent) {
+
     }
 
     public class BluetoothReceiver extends BroadcastReceiver {
@@ -107,8 +131,7 @@ public class ConnectionWatchService extends Service {
     /*
      * MainActivitiy.xmlから移動。
      */
-    public void showNotification() {
-
+    public void showNotification(String message) {
         // 適当にサンプルからだけど、ホントに好きな数字でええもんなんかね。
         // アプリ内でのユニーク？複数通知使わんかったらホンマになんでも良し？
         int NOTIFICATION_ID = 1020;
@@ -116,15 +139,14 @@ public class ConnectionWatchService extends Service {
         NotificationManager notificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        String CHANNEL_ID = "BT Connection Watcher";    //任意のIDらしい。
+        //任意のIDらしい。
+        String CHANNEL_ID = "BT Connection Watcher";
         //任意の名前らしい。
         CharSequence name = getResources().getString(R.string.NotifyDescription);
         //必須じゃないらしい。NotifyDescription
         String Description = getResources().getString(R.string.NotifyDescription);
         //通知のタイトルだわな。
         String title = getResources().getString(R.string.app_name);
-        //通知のメッセージだわな。
-        String message = getResources().getString(R.string.ConnectionLost);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //デフォルトの重要度。Highっぽいぜ。
@@ -167,5 +189,6 @@ public class ConnectionWatchService extends Service {
 
         //いよいよ通知するぜ！
         notificationManager.notify(NOTIFICATION_ID, notification);
+        startForeground(NOTIFICATION_ID, notification);
     }
 }
