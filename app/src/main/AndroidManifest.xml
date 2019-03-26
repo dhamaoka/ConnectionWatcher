@@ -5,13 +5,10 @@
 
     <uses-permission android:name="android.permission.VIBRATE" />   <!-- 追加したはず。 -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
     <uses-permission android:name="android.permission.BLUETOOTH" />  <!-- 追加 -->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> <!-- 追加 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 追加 -->
-
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- 追加 -->
-
     <uses-feature android:name="android.hardware.type.watch" />
 
     <application
@@ -39,7 +36,6 @@
             </intent-filter>
         </activity>
         <service android:name=".ConnectionWatchService" />    <!-- 追加 -->
-
     </application>
 
 </manifest>

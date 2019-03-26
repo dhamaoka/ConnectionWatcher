@@ -69,32 +69,6 @@ public class MainActivity extends WearableActivity {
             switchButton.setChecked(false);
             switchButton.setText(getResources().getText(R.string.SwitchOff));
         }
-/*
-        // switchButtonのオンオフが切り替わった時の処理を設定
-        switchButton.setOnCheckedChangeListener(
-                new CompoundButton.OnCheckedChangeListener(){
-                    public void onCheckedChanged(CompoundButton comButton, boolean isChecked){
-                        // 表示する文字列をスイッチのオンオフで変える
-                        String displayChar;
-                        // オンなら
-                        if(isChecked){
-                            displayChar = getResources().getString(R.string.SwitchOn);
-                            Intent sv = new Intent(getApplicationContext(),ConnectionWatchService.class);
-                            startService(sv);
-                            switchButton.setText(getResources().getText(R.string.SwitchOn));
-                        }
-                        // オフなら
-                        else{
-                            displayChar = getResources().getString(R.string.SwitchOff);
-                            stopService(new Intent(getApplicationContext(),ConnectionWatchService.class));
-                            switchButton.setText(getResources().getText(R.string.SwitchOff));
-                        }
-                        Toast toast = Toast.makeText(MainActivity.this, displayChar, Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
-                }
-        );
-*/
     }
 
     //サービスが起動してるかの確認。

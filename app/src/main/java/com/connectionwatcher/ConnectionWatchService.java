@@ -24,32 +24,31 @@ import java.util.TimerTask;
 public class ConnectionWatchService extends Service {
     private final static String TAG = "ConnectionWatchService";
     private Timer timer = new Timer();
-    private BluetoothReceiver bluetoothReceiver = new BluetoothReceiver();
-    private boolean IsBluetoothConnected = true;
     int INTERVAL_PERIOD = 20000;
+    final BluetoothReceiver bluetoothReceiver = new BluetoothReceiver();
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
-        final IntentFilter bluetoothFilter = new IntentFilter();
-        bluetoothFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-        bluetoothFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 Log.d(TAG, "Working...");
 
-                BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
                 if (bluetoothAdapter != null) {
                     Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
                     if (pairedDevices.size() > 0) {
+                        final IntentFilter bluetoothFilter = new IntentFilter();
+                        bluetoothFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+                        bluetoothFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+                        registerReceiver(bluetoothReceiver, bluetoothFilter);
+
                         for (BluetoothDevice device : pairedDevices) {
                             if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                                registerReceiver(bluetoothReceiver, bluetoothFilter);
-
-                                if (!IsBluetoothConnected) {
+                                Log.d(TAG, device.getName());
+                                if (!bluetoothReceiver.IsBluetoothConnected) {
                                     showNotification();
                                 }
                                 break;
@@ -57,14 +56,19 @@ public class ConnectionWatchService extends Service {
                         }
                     }
                 } else {
-                    stopSelf();
+                    String displayChar = "No Bluetooth device";
+                    Toast toast = Toast.makeText(getApplicationContext(), displayChar, Toast.LENGTH_SHORT);
+                    toast.show();
                 }
             }
         }, 0, INTERVAL_PERIOD);
         return START_STICKY;
     }
 
-    private class BluetoothReceiver extends BroadcastReceiver {
+    public class BluetoothReceiver extends BroadcastReceiver {
+        protected boolean IsBluetoothConnected = true;
+
+        @Override
         public void onReceive(Context arg0, Intent intent) {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
@@ -75,6 +79,7 @@ public class ConnectionWatchService extends Service {
                 toast.show();
                 IsBluetoothConnected = true;
             }
+            Log.d(TAG, String.valueOf(IsBluetoothConnected));
         }
     }
 
