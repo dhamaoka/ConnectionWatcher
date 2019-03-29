@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -164,7 +165,11 @@ public class ConnectionWatchService extends IntentService {
             notificationManager.createNotificationChannel(mChannel);
         }
 
-        Intent resultIntent = new Intent(this, MainActivity.class);
+        //MainActivityを開く。
+        //Intent resultIntent = new Intent(this, MainActivity.class);
+        //Bluetoothの設定画面（接続状態が確認できる）を開く。どちらがいいかなぁ。
+        Intent resultIntent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
+
         PendingIntent resultPendingIntent = PendingIntent.getActivity(
                 this,
                 0,
