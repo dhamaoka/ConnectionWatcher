@@ -7,7 +7,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -26,7 +25,7 @@ public class ConnectionWatchService extends IntentService {
     private final static String TAG = "ConnectionWatchService";
     private Timer timer = new Timer();
     int INTERVAL_PERIOD = 20000;
-    final BluetoothReceiver bluetoothReceiver = new BluetoothReceiver();
+    final BluetoothReceiver btReceiver = new BluetoothReceiver();
 
     public ConnectionWatchService() {
         super(TAG);
@@ -35,31 +34,30 @@ public class ConnectionWatchService extends IntentService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
-        String displayChar = getResources().getString(R.string.Start_Watching);
-        Toast toast = Toast.makeText(getApplicationContext(), displayChar, Toast.LENGTH_SHORT);
-        toast.show();
         //通知のメッセージだわな。
         String message = getResources().getString(R.string.SwitchOn);
         showNotification(message);
 
-        final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        final IntentFilter bluetoothFilter = new IntentFilter();
-        bluetoothFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-        bluetoothFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-        registerReceiver(bluetoothReceiver, bluetoothFilter);
+        final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        final IntentFilter btFilter = new IntentFilter();
+        btFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        btFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        registerReceiver(btReceiver, btFilter);
 
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 Log.d(TAG, "Working...");
 
-                if (bluetoothAdapter != null) {
-                    Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+                if (btAdapter != null) {
+                    Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
                     if (pairedDevices.size() > 0) {
                         for (BluetoothDevice device : pairedDevices) {
                             if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
                                 Log.d(TAG, device.getName());
-                                if (!bluetoothReceiver.IsBluetoothConnected) {
+                                Log.d(TAG, String.valueOf(btReceiver.IsConnected()));
+                                if (!btReceiver.IsConnected()) {
                                     //通知のメッセージだわな。
                                     String message = getResources().getString(R.string.ConnectionLost);
                                     showNotification(message);
@@ -69,8 +67,7 @@ public class ConnectionWatchService extends IntentService {
                         }
                     }
                 } else {
-                    String displayChar = "No Bluetooth device";
-                    Toast toast = Toast.makeText(getApplicationContext(), displayChar, Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(getApplicationContext(), "No Bluetooth device", Toast.LENGTH_SHORT);
                     toast.show();
                 }
             }
@@ -80,25 +77,6 @@ public class ConnectionWatchService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-
-    }
-
-    public class BluetoothReceiver extends BroadcastReceiver {
-        protected boolean IsBluetoothConnected = true;
-
-        @Override
-        public void onReceive(Context arg0, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
-                IsBluetoothConnected = false;
-            } else if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
-                String displayChar = getResources().getString(R.string.Connected);
-                Toast toast = Toast.makeText(getApplicationContext(), displayChar, Toast.LENGTH_SHORT);
-                toast.show();
-                IsBluetoothConnected = true;
-            }
-            Log.d(TAG, String.valueOf(IsBluetoothConnected));
-        }
     }
 
     @Override
@@ -118,7 +96,7 @@ public class ConnectionWatchService extends IntentService {
         if (timer != null) {
             timer.cancel();
         }
-        unregisterReceiver(bluetoothReceiver);
+        unregisterReceiver(btReceiver);
         Log.d(TAG, "onDestroy");
     }
 

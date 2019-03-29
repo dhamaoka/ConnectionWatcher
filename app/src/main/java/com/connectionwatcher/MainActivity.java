@@ -34,7 +34,6 @@ public class MainActivity extends WearableActivity {
                         String displayChar;
                         // オンなら
                         if (isChecked) {
-                            displayChar = getResources().getString(R.string.SwitchOn);
                             Intent sv = new Intent(getBaseContext(), ConnectionWatchService.class);
                             startForegroundService(sv);
                             switchButton.setText(getResources().getText(R.string.SwitchOn));
@@ -44,10 +43,10 @@ public class MainActivity extends WearableActivity {
                         else {
                             displayChar = getResources().getString(R.string.SwitchOff);
                             stopService(new Intent(getBaseContext(), ConnectionWatchService.class));
-                            switchButton.setText(getResources().getText(R.string.SwitchOff));
+                            switchButton.setText(displayChar);
+                            Toast toast = Toast.makeText(MainActivity.this, displayChar, Toast.LENGTH_SHORT);
+                            toast.show();
                         }
-                        Toast toast = Toast.makeText(MainActivity.this, displayChar, Toast.LENGTH_SHORT);
-                        toast.show();
                     }
                 }
         );
