@@ -38,6 +38,7 @@ public class MainActivity extends WearableActivity {
                             Intent sv = new Intent(getBaseContext(), ConnectionWatchService.class);
                             startForegroundService(sv);
                             switchButton.setText(getResources().getText(R.string.SwitchOn));
+                            finish();
                         }
                         // オフなら
                         else {
