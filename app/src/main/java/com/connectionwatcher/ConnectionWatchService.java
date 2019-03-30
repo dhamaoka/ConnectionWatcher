@@ -22,6 +22,8 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.bluetooth.BluetoothClass.Device.Major.PHONE;
+
 public class ConnectionWatchService extends IntentService {
     private final static String TAG = "ConnectionWatchService";
     private Timer timer = new Timer();
@@ -62,14 +64,18 @@ public class ConnectionWatchService extends IntentService {
                     if (pairedDevices.size() > 0) {
                         for (BluetoothDevice device : pairedDevices) {
                             if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                                Log.d(TAG, String.valueOf(intervals));
-                                Log.d(TAG, String.valueOf(btReceiver.IsConnected()));
-                                if (!btReceiver.IsConnected()) {
-                                    //通知のメッセージだわな。
-                                    String message = getResources().getString(R.string.ConnectionLost);
-                                    showNotification(message);
+                                //Log.d(TAG, String.valueOf(device.getBluetoothClass().getDeviceClass()));
+                                if (device.getBluetoothClass().getMajorDeviceClass() == PHONE) {
+                                    Log.d(TAG, device.getName());
+                                    if (btReceiver.FoundedDevice() != null ) {
+                                        if (!btReceiver.IsConnected() && (btReceiver.FoundedDevice().equals(device))) {
+                                            //通知のメッセージだわな。
+                                            String message = getResources().getString(R.string.ConnectionLost);
+                                            showNotification(message);
+                                        }
+                                    }
+                                    break;
                                 }
-                                break;
                             }
                         }
                     }
@@ -94,7 +100,9 @@ public class ConnectionWatchService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate");
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onCreate");
+        }
     }
 
     @Override
@@ -104,7 +112,9 @@ public class ConnectionWatchService extends IntentService {
             timer.cancel();
         }
         unregisterReceiver(btReceiver);
-        Log.d(TAG, "onDestroy");
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onDestroy");
+        }
     }
 
     /*

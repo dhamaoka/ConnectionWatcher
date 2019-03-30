@@ -11,6 +11,7 @@ import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.TextView;
 
+@SuppressWarnings("ALL")
 public class MainActivity extends WearableActivity {
     SharedPreferences data;
 
@@ -56,8 +57,6 @@ public class MainActivity extends WearableActivity {
         numPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                //Log.d("MainActivity", "oldVal = " + String.valueOf(oldVal));
-                //Log.d("MainActivity", "newVal = " + String.valueOf(newVal));
                 SharedPreferences.Editor editor = data.edit();
                 editor.putInt("Intervals", newVal);
                 //editor.commit();
