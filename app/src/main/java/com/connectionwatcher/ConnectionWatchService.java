@@ -10,6 +10,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
@@ -24,19 +25,20 @@ import java.util.TimerTask;
 public class ConnectionWatchService extends IntentService {
     private final static String TAG = "ConnectionWatchService";
     private Timer timer = new Timer();
-
-    int INTERVAL_PERIOD = 20000;
     final BluetoothReceiver btReceiver = new BluetoothReceiver();
-
     public ConnectionWatchService() {
         super(TAG);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        final int intervals = intent.getIntExtra("intervals",20);
+        SharedPreferences data = getSharedPreferences("settings", MODE_PRIVATE);
+        // 監視間隔の読み込み
+        final int intervals = data.getInt("Intervals", 20);
+        Log.d(TAG, String.valueOf(intervals));
 
-        INTERVAL_PERIOD = (intervals * 1000);
+        int INTERVAL_PERIOD = (intervals * 1000);
+
         Log.d(TAG, "onStartCommand");
 
         //通知のメッセージだわな。
@@ -106,7 +108,7 @@ public class ConnectionWatchService extends IntentService {
     }
 
     /*
-     * MainActivitiy.xmlから移動。
+     * MainActivity.xmlから移動。
      */
     public void showNotification(String message) {
         // 適当にサンプルからだけど、ホントに好きな数字でええもんなんかね。

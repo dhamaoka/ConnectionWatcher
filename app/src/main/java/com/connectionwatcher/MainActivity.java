@@ -10,44 +10,47 @@ import android.widget.CompoundButton;
 import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends WearableActivity {
     SharedPreferences data;
+
     int intervals = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        data = getSharedPreferences("settings", MODE_PRIVATE);
 
         final NumberPicker numPicker = findViewById(R.id.numPicker);
         final TextView textSecLabel = findViewById(R.id.textView4);
-
-        // idがswitchButtonのSwitchを取得
         final Switch switchButton = findViewById(R.id.switch1);
-
-        data = getSharedPreferences("intervals", MODE_PRIVATE);
-        // 監視間隔の読み込み
-        intervals = data.getInt("Intervals", 20);
 
         // Flavorで処理分岐。
         if (BuildConfig.FLAVOR.equals("ForFree")) {
-            numPicker.setValue(intervals);
+            SharedPreferences.Editor editor = data.edit();
+            editor.putInt("Intervals", intervals);
+            //editor.commit();
+            editor.apply();
             numPicker.setVisibility(View.INVISIBLE);
             textSecLabel.setVisibility(View.INVISIBLE);
         } else {
+            // 監視間隔の読み込み
+            intervals = data.getInt("Intervals", 20);
             numPicker.setMaxValue(60);
             numPicker.setMinValue(10);
         }
+        numPicker.setValue(intervals);
 
         //サービスが既に起動している場合は、Trueに。
         if (isServiceWorking()) {
             switchButton.setChecked(true);
             switchButton.setText(getResources().getText(R.string.SwitchOn));
+            numPicker.setEnabled(false);
         } else {
             switchButton.setChecked(false);
             switchButton.setText(getResources().getText(R.string.SwitchOff));
+            numPicker.setEnabled(true);
         }
 
         numPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
@@ -66,24 +69,34 @@ public class MainActivity extends WearableActivity {
         switchButton.setOnCheckedChangeListener(
                 new CompoundButton.OnCheckedChangeListener() {
                     public void onCheckedChanged(CompoundButton comButton, boolean isChecked) {
+
+                        SharedPreferences.Editor editor = data.edit();
+                        if (BuildConfig.FLAVOR.equals("ForFree")) {
+                            editor.putBoolean("WhenBootOn", false);
+                        } else {
+                            intervals = numPicker.getValue();
+                            editor.putInt("Intervals", intervals);
+                            editor.putBoolean("WhenBootOn", isChecked);
+                        }
+                        editor.apply();
+
                         // 表示する文字列をスイッチのオンオフで変える
                         String displayChar;
                         // オンなら
                         if (isChecked) {
                             Intent sv = new Intent(getBaseContext(), ConnectionWatchService.class);
-                            sv.putExtra("intervals",numPicker.getValue());
                             startForegroundService(sv);
                             switchButton.setText(getResources().getText(R.string.SwitchOn));
                             finish();
                         }
                         // オフなら
                         else {
+                            numPicker.setEnabled(true);
                             displayChar = getResources().getString(R.string.SwitchOff);
                             stopService(new Intent(getBaseContext(), ConnectionWatchService.class));
                             switchButton.setText(displayChar);
-                            Toast toast = Toast.makeText(MainActivity.this, displayChar, Toast.LENGTH_SHORT);
-                            toast.show();
                         }
+
                     }
                 }
         );
@@ -100,7 +113,15 @@ public class MainActivity extends WearableActivity {
         intervals = numPicker.getValue();
 
         SharedPreferences.Editor editor = data.edit();
-        editor.putInt("Intervals", intervals);
+
+        final Switch switchButton = findViewById(R.id.switch1);
+
+        if (BuildConfig.FLAVOR.equals("ForFree")) {
+            editor.putBoolean("WhenBootOn", false);
+        } else {
+            editor.putInt("Intervals", intervals);
+            editor.putBoolean("WhenBootOn", switchButton.isChecked());
+        }
 
         //editor.commit();
         editor.apply();
@@ -109,22 +130,26 @@ public class MainActivity extends WearableActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        // 監視間隔の読み込み＆再設定
-        intervals = data.getInt("Intervals", 20);
         final NumberPicker numPicker = findViewById(R.id.numPicker);
-        numPicker.setValue(intervals);
+
+        // Flavorで処理分岐。
+        if (BuildConfig.FLAVOR.equals("ForPro")) {
+            // 監視間隔の読み込み＆再設定
+            intervals = data.getInt("Intervals", 20);
+            numPicker.setValue(intervals);
+        }
 
         // idがswitchButtonのSwitchを取得
         final Switch switchButton = findViewById(R.id.switch1);
 
-        //サービスが既に起動している場合は、Trueに。
         if (isServiceWorking()) {
             switchButton.setChecked(true);
             switchButton.setText(getResources().getText(R.string.SwitchOn));
+            numPicker.setEnabled(false);
         } else {
             switchButton.setChecked(false);
             switchButton.setText(getResources().getText(R.string.SwitchOff));
+            numPicker.setEnabled(true);
         }
     }
 

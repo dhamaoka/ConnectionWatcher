@@ -20,10 +20,16 @@ android {
         ForFree {
             dimension "version"
             applicationId 'com.connectionwatcher.free'
+            versionCode 1
+            versionName '1.2'
+            versionNameSuffix '.Free'
         }
         ForPro {
             dimension "version"
             applicationId 'com.connectionwatcher.pro'
+            versionCode 1
+            versionName '1.0'
+            versionNameSuffix '.Pro'
         }
     }
 }

@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">BT Connection Watcher</string>
     <string name="start_service">Status Of Bluetooth Connection Watcher</string>
     <string name="WatchConnection">Watch BT Connection</string>
     <string name="ConnectionLost">Bluetooth Connection Lost!</string>

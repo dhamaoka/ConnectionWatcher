@@ -1,0 +1,13 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.connectionwatcher">
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- 追加 -->
+
+    <application tools:ignore="GoogleAppIndexingWarning">
+        <receiver android:name=".BootCompletedReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>
