@@ -10,29 +10,57 @@
     tools:deviceIds="wear">
 
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="@dimen/inner_frame_layout_padding"
         app:boxedEdges="all"
-        tools:ignore="MissingPrefix">
+        tools:ignore="MissingPrefix"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="39dp"
+            android:autoSizeTextType="uniform"
+            android:text="@string/start_service"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal">
+
+            <NumberPicker
+                android:id="@+id/numPicker"
+                android:layout_width="85dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center|center_vertical"
+                android:labelFor="@+id/textView3"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:gravity="center_horizontal|center_vertical"
+                android:text="@string/labelSecond"
+                android:textSize="12sp" />
+
+        </LinearLayout>
 
         <Switch
             android:id="@+id/switch1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/BottomMargin"
+            android:layout_height="wrap_content"
+            android:autoSizeTextType="uniform"
+            android:elevation="0dp"
+            android:gravity="start"
             android:text="@string/WatchConnection"
             android:textOff="@string/SwitchOff"
             android:textOn="@string/SwitchOn" />
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="64dp"
-            android:layout_marginTop="@dimen/TopMargin"
-            android:autoSizeTextType="uniform"
-            android:text="@string/start_service" />
-
-    </FrameLayout>
+    </LinearLayout>
 </android.support.wear.widget.BoxInsetLayout>

@@ -24,6 +24,7 @@ import java.util.TimerTask;
 public class ConnectionWatchService extends IntentService {
     private final static String TAG = "ConnectionWatchService";
     private Timer timer = new Timer();
+
     int INTERVAL_PERIOD = 20000;
     final BluetoothReceiver btReceiver = new BluetoothReceiver();
 
@@ -33,7 +34,11 @@ public class ConnectionWatchService extends IntentService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        final int intervals = intent.getIntExtra("intervals",20);
+
+        INTERVAL_PERIOD = (intervals * 1000);
         Log.d(TAG, "onStartCommand");
+
         //通知のメッセージだわな。
         String message = getResources().getString(R.string.SwitchOn);
         showNotification(message);
@@ -55,7 +60,7 @@ public class ConnectionWatchService extends IntentService {
                     if (pairedDevices.size() > 0) {
                         for (BluetoothDevice device : pairedDevices) {
                             if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                                Log.d(TAG, device.getName());
+                                Log.d(TAG, String.valueOf(intervals));
                                 Log.d(TAG, String.valueOf(btReceiver.IsConnected()));
                                 if (!btReceiver.IsConnected()) {
                                     //通知のメッセージだわな。

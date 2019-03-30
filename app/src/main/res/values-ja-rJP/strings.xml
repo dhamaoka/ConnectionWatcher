@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="start_service">BTが圏外か監視します。</string>
+    <string name="start_service">Bluetooth圏外監視</string>
     <string name="WatchConnection">監視</string>
     <string name="ConnectionLost">Bluetoothが切断されました</string>
     <string name="NotifyDescription">Bluetooth 接続監視</string>
@@ -8,5 +8,5 @@
     <string name="SwitchOff">監視オフ</string>
     <string name="app_name">BT圏外監視</string>
     <string name="Connected">接続しました。</string>
-    <string name="Start_Watching">監視を開始しました。</string>
+    <string name="labelSecond">秒</string>
 </resources>
