@@ -20,9 +20,9 @@ android {
         ForFree {
             dimension "version"
             applicationId 'com.connectionwatcher.free'
-            versionCode 1
             versionName '1.0'
             versionNameSuffix '.Free'
+            versionCode 4
         }
         ForPro {
             dimension "version"
@@ -35,6 +35,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.android.billingclient:billing:1.0'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.google.android.support:wearable:2.4.0'
     implementation 'com.google.android.gms:play-services-wearable:16.0.1'
